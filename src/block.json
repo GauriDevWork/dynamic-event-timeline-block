@@ -9,6 +9,29 @@
   "description": "Create interactive event timelines with dates, images, and icons.",
   "keywords": ["timeline", "events", "history"],
   "textdomain": "dynamic-event-timeline-block",
+  "attributes": {
+    "events": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "id":          { "type": "string" },
+          "title":       { "type": "string" },
+          "date":        { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "orientation": {
+      "type": "string",
+      "default": "vertical"
+    },
+    "darkMode": {
+      "type": "boolean",
+      "default": false
+    }
+  },
   "supports": {
     "html": false,
     "align": ["wide", "full"],
