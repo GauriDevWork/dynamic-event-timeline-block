@@ -1,7 +1,7 @@
 import './style.scss';
 import './editor.scss';
 import { registerBlockType } from '@wordpress/blocks';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import {
     PanelBody,
     SelectControl,
@@ -9,7 +9,10 @@ import {
     TextControl,
     TextareaControl,
     Button,
+    Popover,
+    DateTimePicker,
 } from '@wordpress/components';
+import { useState } from '@wordpress/element';
 import metadata from './block.json';
 
 /**
@@ -26,6 +29,11 @@ registerBlockType( metadata.name, {
             className: `detb-timeline detb-orientation-${ orientation }${ darkMode ? ' detb-dark' : '' }`,
         } );
 
+        // openDatePickerIndex is local UI state — which popover is open.
+        // It does not need to persist across saves, so useState is correct here.
+        // Block attributes are for content data only, not transient UI state.
+        const [ openDatePickerIndex, setOpenDatePickerIndex ] = useState( null );
+
         /**
          * Adds a new empty event to the events array.
          */
@@ -38,6 +46,8 @@ registerBlockType( metadata.name, {
                         title:       '',
                         date:        '',
                         description: '',
+                        imageUrl:    '',
+                        imageAlt:    '',
                     },
                 ],
             } );
@@ -104,6 +114,7 @@ registerBlockType( metadata.name, {
                                 padding:      '12px',
                                 marginBottom: '12px',
                                 borderRadius: '4px',
+                                position:     'relative',
                             } }
                         >
                             <TextControl
@@ -111,16 +122,86 @@ registerBlockType( metadata.name, {
                                 value={ event.title }
                                 onChange={ ( value ) => updateEvent( index, 'title', value ) }
                             />
-                            <TextControl
-                                label="Date"
-                                value={ event.date }
-                                onChange={ ( value ) => updateEvent( index, 'date', value ) }
-                            />
+
+                            { /* Date picker field */ }
+                            <div style={ { marginBottom: '8px' } }>
+                                <label style={ { display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' } }>
+                                    Date
+                                </label>
+                                <Button
+                                    variant="secondary"
+                                    onClick={ () => setOpenDatePickerIndex(
+                                        openDatePickerIndex === index ? null : index
+                                    ) }
+                                >
+                                    { event.date ? event.date : 'Pick a date' }
+                                </Button>
+                                { openDatePickerIndex === index && (
+                                    <Popover
+                                        placement="bottom-start"
+                                        onClose={ () => setOpenDatePickerIndex( null ) }
+                                    >
+                                        <DateTimePicker
+                                            currentDate={ event.date || null }
+                                            onChange={ ( value ) => {
+                                                updateEvent( index, 'date', value );
+                                                setOpenDatePickerIndex( null );
+                                            } }
+                                            is12Hour={ false }
+                                        />
+                                    </Popover>
+                                ) }
+                            </div>
+
                             <TextareaControl
                                 label="Description"
                                 value={ event.description }
                                 onChange={ ( value ) => updateEvent( index, 'description', value ) }
                             />
+
+                            { /* Image upload */ }
+                            <MediaUploadCheck>
+                                <MediaUpload
+                                    onSelect={ ( media ) => {
+                                        updateEvent( index, 'imageUrl', media.url );
+                                        updateEvent( index, 'imageAlt', media.alt || media.title || '' );
+                                    } }
+                                    allowedTypes={ [ 'image' ] }
+                                    value={ event.imageUrl }
+                                    render={ ( { open } ) => (
+                                        <div style={ { marginBottom: '8px' } }>
+                                            { event.imageUrl ? (
+                                                <>
+                                                    <img
+                                                        src={ event.imageUrl }
+                                                        alt={ event.imageAlt }
+                                                        style={ { maxWidth: '100%', marginBottom: '8px', display: 'block' } }
+                                                    />
+                                                    <Button variant="secondary" onClick={ open }>
+                                                        Replace Image
+                                                    </Button>
+                                                    <Button
+                                                        isDestructive
+                                                        variant="link"
+                                                        onClick={ () => {
+                                                            updateEvent( index, 'imageUrl', '' );
+                                                            updateEvent( index, 'imageAlt', '' );
+                                                        } }
+                                                        style={ { marginLeft: '8px' } }
+                                                    >
+                                                        Remove Image
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <Button variant="secondary" onClick={ open }>
+                                                    Add Image
+                                                </Button>
+                                            ) }
+                                        </div>
+                                    ) }
+                                />
+                            </MediaUploadCheck>
+
                             <Button
                                 isDestructive
                                 variant="secondary"
@@ -131,10 +212,7 @@ registerBlockType( metadata.name, {
                         </div>
                     ) ) }
 
-                    <Button
-                        variant="primary"
-                        onClick={ addEvent }
-                    >
+                    <Button variant="primary" onClick={ addEvent }>
                         + Add Event
                     </Button>
                 </div>

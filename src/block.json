@@ -19,7 +19,9 @@
           "id":          { "type": "string" },
           "title":       { "type": "string" },
           "date":        { "type": "string" },
-          "description": { "type": "string" }
+          "description": { "type": "string" },
+          "imageUrl":    { "type": "string" },
+          "imageAlt":    { "type": "string" }
         }
       }
     },
