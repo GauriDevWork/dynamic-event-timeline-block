@@ -40,9 +40,19 @@ $wrapper_classes = sprintf(
             <?php foreach ( $events as $event ) : ?>
                 <li class="detb-event-item">
 
+                    <?php if ( ! empty( $event['imageUrl'] ) ) : ?>
+                        <div class="detb-event-image">
+                            <img
+                                src="<?php echo esc_url( $event['imageUrl'] ); ?>"
+                                alt="<?php echo esc_attr( $event['imageAlt'] ?? '' ); ?>"
+                                loading="lazy"
+                            />
+                        </div>
+                    <?php endif; ?>
+
                     <?php if ( ! empty( $event['date'] ) ) : ?>
                         <time class="detb-event-date" datetime="<?php echo esc_attr( $event['date'] ); ?>">
-                            <?php echo esc_html( $event['date'] ); ?>
+                            <?php echo esc_html( wp_date( get_option( 'date_format' ), strtotime( $event['date'] ) ) ); ?>
                         </time>
                     <?php endif; ?>
 

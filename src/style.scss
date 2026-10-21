@@ -120,3 +120,17 @@
     padding:            16px;
     border-radius:      8px;
 }
+
+/* ── Event image ───────────────────────────────────────── */
+
+.detb-event-image {
+    margin-bottom: 12px;
+
+    img {
+        width:         100%;
+        max-width:     100%;
+        height:        auto;
+        border-radius: 4px;
+        display:       block;
+    }
+}
