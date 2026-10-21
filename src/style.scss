@@ -1,0 +1,122 @@
+/**
+ * Frontend styles for the Dynamic Event Timeline Block.
+ * Loaded on both frontend and block editor.
+ */
+
+.detb-timeline {
+    --detb-line-color:   #ddd;
+    --detb-dot-color:    #0073aa;
+    --detb-date-color:   #666;
+    --detb-title-color:  #1e1e1e;
+    --detb-text-color:   #444;
+    --detb-bg-color:     #fff;
+    --detb-dot-size:     14px;
+    --detb-line-width:   2px;
+
+    position:   relative;
+    padding:    0;
+    margin:     0 auto;
+    max-width:  800px;
+    font-family: inherit;
+    background: var(--detb-bg-color);
+}
+
+/* ── Vertical layout ───────────────────────────────────── */
+
+.detb-timeline.detb-orientation-vertical .detb-events-list {
+    list-style:    none;
+    margin:        0;
+    padding:       0 0 0 32px;
+    border-left:   var(--detb-line-width) solid var(--detb-line-color);
+}
+
+.detb-timeline.detb-orientation-vertical .detb-event-item {
+    position:      relative;
+    margin-bottom: 32px;
+    padding-left:  24px;
+}
+
+.detb-timeline.detb-orientation-vertical .detb-event-item::before {
+    content:       '';
+    position:      absolute;
+    left:          calc( -1 * var(--detb-dot-size) / 2 - var(--detb-line-width) );
+    top:           4px;
+    width:         var(--detb-dot-size);
+    height:        var(--detb-dot-size);
+    border-radius: 50%;
+    background:    var(--detb-dot-color);
+}
+
+/* ── Horizontal layout (structure only — Day 6) ────────── */
+
+.detb-timeline.detb-orientation-horizontal .detb-events-list {
+    display:         flex;
+    flex-direction:  row;
+    list-style:      none;
+    margin:          0;
+    padding:         32px 0 0 0;
+    border-top:      var(--detb-line-width) solid var(--detb-line-color);
+    overflow-x:      auto;
+    gap:             24px;
+}
+
+.detb-timeline.detb-orientation-horizontal .detb-event-item {
+    position:        relative;
+    min-width:       180px;
+    padding-top:     24px;
+}
+
+.detb-timeline.detb-orientation-horizontal .detb-event-item::before {
+    content:         '';
+    position:        absolute;
+    top:             calc( -1 * var(--detb-dot-size) / 2 - var(--detb-line-width) );
+    left:            0;
+    width:           var(--detb-dot-size);
+    height:          var(--detb-dot-size);
+    border-radius:   50%;
+    background:      var(--detb-dot-color);
+}
+
+/* ── Event elements ────────────────────────────────────── */
+
+.detb-event-date {
+    display:     block;
+    font-size:   0.8rem;
+    font-weight: 600;
+    color:       var(--detb-date-color);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.detb-event-title {
+    font-size:     1.1rem;
+    font-weight:   700;
+    color:         var(--detb-title-color);
+    margin:        0 0 8px 0;
+}
+
+.detb-event-description {
+    font-size:   0.95rem;
+    color:       var(--detb-text-color);
+    margin:      0;
+    line-height: 1.6;
+}
+
+.detb-no-events {
+    color:       var(--detb-date-color);
+    font-style:  italic;
+}
+
+/* ── Dark mode ─────────────────────────────────────────── */
+
+.detb-timeline.detb-dark {
+    --detb-line-color:  #444;
+    --detb-dot-color:   #4fb3f6;
+    --detb-date-color:  #aaa;
+    --detb-title-color: #f0f0f0;
+    --detb-text-color:  #ccc;
+    --detb-bg-color:    #1e1e1e;
+    padding:            16px;
+    border-radius:      8px;
+}
