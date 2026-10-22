@@ -21,7 +21,9 @@
           "date":        { "type": "string" },
           "description": { "type": "string" },
           "imageUrl":    { "type": "string" },
-          "imageAlt":    { "type": "string" }
+          "imageAlt":    { "type": "string" },
+          "icon":        { "type": "string" },
+          "status":      { "type": "string" }
         }
       }
     },

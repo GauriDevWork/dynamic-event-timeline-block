@@ -48,6 +48,8 @@ registerBlockType( metadata.name, {
                         description: '',
                         imageUrl:    '',
                         imageAlt:    '',
+                        icon:        '',
+                        status:      '',
                     },
                 ],
             } );
@@ -195,7 +197,30 @@ registerBlockType( metadata.name, {
                                         value={ event.description }
                                         onChange={ ( value ) => updateEvent( index, 'description', value ) }
                                     />
-
+                                    <SelectControl
+                                            label="Icon"
+                                            value={ event.icon }
+                                            options={ [
+                                                { label: 'None',     value: '' },
+                                                { label: '📅 Calendar', value: 'calendar' },
+                                                { label: '🚀 Launch',   value: 'launch' },
+                                                { label: '✅ Check',    value: 'check' },
+                                                { label: '⭐ Star',     value: 'star' },
+                                                { label: '📍 Pin',      value: 'pin' },
+                                            ] }
+                                            onChange={ ( value ) => updateEvent( index, 'icon', value ) }
+                                        />
+                                        <SelectControl
+                                            label="Status"
+                                            value={ event.status }
+                                            options={ [
+                                                { label: 'None',        value: '' },
+                                                { label: 'Upcoming',    value: 'upcoming' },
+                                                { label: 'In Progress', value: 'in-progress' },
+                                                { label: 'Completed',   value: 'completed' },
+                                            ] }
+                                            onChange={ ( value ) => updateEvent( index, 'status', value ) }
+                                        />
                                     { /* Image upload */ }
                                     <MediaUploadCheck>
                                         <MediaUpload

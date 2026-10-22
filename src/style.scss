@@ -134,3 +134,26 @@
         display:       block;
     }
 }
+
+/* ── Event status badges ───────────────────────────────── */
+
+.detb-event-status {
+    display:       inline-block;
+    font-size:     0.75rem;
+    font-weight:   600;
+    padding:       2px 8px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.detb-status-upcoming    { background: #e8f4fd; color: #0073aa; }
+.detb-status-in-progress { background: #fff8e1; color: #f57c00; }
+.detb-status-completed   { background: #e8f5e9; color: #2e7d32; }
+
+.detb-event-icon {
+    display:       block;
+    font-size:     1.5rem;
+    margin-bottom: 4px;
+}
