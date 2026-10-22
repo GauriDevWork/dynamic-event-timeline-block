@@ -48,6 +48,8 @@ registerBlockType( metadata.name, {
                         description: '',
                         imageUrl:    '',
                         imageAlt:    '',
+                        icon:        '',
+                        status:      '',
                     },
                 ],
             } );
@@ -107,110 +109,170 @@ registerBlockType( metadata.name, {
                     ) }
 
                     { events.map( ( event, index ) => (
-                        <div
-                            key={ event.id }
-                            style={ {
-                                border:       '1px solid #ddd',
-                                padding:      '12px',
-                                marginBottom: '12px',
-                                borderRadius: '4px',
-                                position:     'relative',
-                            } }
-                        >
-                            <TextControl
-                                label="Event Title"
-                                value={ event.title }
-                                onChange={ ( value ) => updateEvent( index, 'title', value ) }
-                            />
-
-                            { /* Date picker field */ }
-                            <div style={ { marginBottom: '8px' } }>
-                                <label style={ { display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' } }>
-                                    Date
-                                </label>
-                                <Button
-                                    variant="secondary"
-                                    onClick={ () => setOpenDatePickerIndex(
-                                        openDatePickerIndex === index ? null : index
-                                    ) }
-                                >
-                                    { event.date ? event.date : 'Pick a date' }
-                                </Button>
-                                { openDatePickerIndex === index && (
-                                    <Popover
-                                        placement="bottom-start"
-                                        onClose={ () => setOpenDatePickerIndex( null ) }
-                                    >
-                                        <DateTimePicker
-                                            currentDate={ event.date || null }
-                                            onChange={ ( value ) => {
-                                                updateEvent( index, 'date', value );
-                                                setOpenDatePickerIndex( null );
-                                            } }
-                                            is12Hour={ false }
-                                        />
-                                    </Popover>
-                                ) }
-                            </div>
-
-                            <TextareaControl
-                                label="Description"
-                                value={ event.description }
-                                onChange={ ( value ) => updateEvent( index, 'description', value ) }
-                            />
-
-                            { /* Image upload */ }
-                            <MediaUploadCheck>
-                                <MediaUpload
-                                    onSelect={ ( media ) => {
-                                        updateEvent( index, 'imageUrl', media.url );
-                                        updateEvent( index, 'imageAlt', media.alt || media.title || '' );
+                                <div
+                                    key={ event.id }
+                                    draggable
+                                    onDragStart={ ( e ) => {
+                                        e.dataTransfer.setData( 'text/plain', String( index ) );
+                                        e.currentTarget.style.opacity = '0.4';
                                     } }
-                                    allowedTypes={ [ 'image' ] }
-                                    value={ event.imageUrl }
-                                    render={ ( { open } ) => (
-                                        <div style={ { marginBottom: '8px' } }>
-                                            { event.imageUrl ? (
-                                                <>
-                                                    <img
-                                                        src={ event.imageUrl }
-                                                        alt={ event.imageAlt }
-                                                        style={ { maxWidth: '100%', marginBottom: '8px', display: 'block' } }
-                                                    />
-                                                    <Button variant="secondary" onClick={ open }>
-                                                        Replace Image
-                                                    </Button>
-                                                    <Button
-                                                        isDestructive
-                                                        variant="link"
-                                                        onClick={ () => {
-                                                            updateEvent( index, 'imageUrl', '' );
-                                                            updateEvent( index, 'imageAlt', '' );
-                                                        } }
-                                                        style={ { marginLeft: '8px' } }
-                                                    >
-                                                        Remove Image
-                                                    </Button>
-                                                </>
-                                            ) : (
-                                                <Button variant="secondary" onClick={ open }>
-                                                    Add Image
-                                                </Button>
-                                            ) }
-                                        </div>
-                                    ) }
-                                />
-                            </MediaUploadCheck>
+                                    onDragEnd={ ( e ) => {
+                                        e.currentTarget.style.opacity = '1';
+                                    } }
+                                    onDragOver={ ( e ) => {
+                                        e.preventDefault();
+                                        e.currentTarget.style.borderColor = '#0073aa';
+                                    } }
+                                    onDragLeave={ ( e ) => {
+                                        e.currentTarget.style.borderColor = '#ddd';
+                                    } }
+                                    onDrop={ ( e ) => {
+                                        e.preventDefault();
+                                        e.currentTarget.style.borderColor = '#ddd';
+                                        const fromIndex = parseInt( e.dataTransfer.getData( 'text/plain' ), 10 );
+                                        const toIndex   = index;
+                                        if ( fromIndex === toIndex ) return;
+                                        const reordered = [ ...events ];
+                                        const [ removed ] = reordered.splice( fromIndex, 1 );
+                                        reordered.splice( toIndex, 0, removed );
+                                        setAttributes( { events: reordered } );
+                                    } }
+                                    style={ {
+                                        border:       '1px solid #ddd',
+                                        padding:      '12px',
+                                        marginBottom: '12px',
+                                        borderRadius: '4px',
+                                        position:     'relative',
+                                        cursor:       'grab',
+                                    } }
+                                >
+                                    { /* Drag handle indicator */ }
+                                    <div style={ {
+                                        fontSize:     '18px',
+                                        color:        '#999',
+                                        marginBottom: '8px',
+                                        userSelect:   'none',
+                                    } }>
+                                        ⠿ Drag to reorder
+                                    </div>
 
-                            <Button
-                                isDestructive
-                                variant="secondary"
-                                onClick={ () => removeEvent( index ) }
-                            >
-                                Remove Event
-                            </Button>
-                        </div>
-                    ) ) }
+                                    <TextControl
+                                        label="Event Title"
+                                        value={ event.title }
+                                        onChange={ ( value ) => updateEvent( index, 'title', value ) }
+                                    />
+
+                                    { /* Date picker field */ }
+                                    <div style={ { marginBottom: '8px' } }>
+                                        <label style={ { display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' } }>
+                                            Date
+                                        </label>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={ () => setOpenDatePickerIndex(
+                                                openDatePickerIndex === index ? null : index
+                                            ) }
+                                        >
+                                            { event.date ? event.date : 'Pick a date' }
+                                        </Button>
+                                        { openDatePickerIndex === index && (
+                                            <Popover
+                                                placement="bottom-start"
+                                                onClose={ () => setOpenDatePickerIndex( null ) }
+                                            >
+                                                <DateTimePicker
+                                                    currentDate={ event.date || null }
+                                                    onChange={ ( value ) => {
+                                                        updateEvent( index, 'date', value );
+                                                        setOpenDatePickerIndex( null );
+                                                    } }
+                                                    is12Hour={ false }
+                                                />
+                                            </Popover>
+                                        ) }
+                                    </div>
+
+                                    <TextareaControl
+                                        label="Description"
+                                        value={ event.description }
+                                        onChange={ ( value ) => updateEvent( index, 'description', value ) }
+                                    />
+                                    <SelectControl
+                                            label="Icon"
+                                            value={ event.icon }
+                                            options={ [
+                                                { label: 'None',     value: '' },
+                                                { label: '📅 Calendar', value: 'calendar' },
+                                                { label: '🚀 Launch',   value: 'launch' },
+                                                { label: '✅ Check',    value: 'check' },
+                                                { label: '⭐ Star',     value: 'star' },
+                                                { label: '📍 Pin',      value: 'pin' },
+                                            ] }
+                                            onChange={ ( value ) => updateEvent( index, 'icon', value ) }
+                                        />
+                                        <SelectControl
+                                            label="Status"
+                                            value={ event.status }
+                                            options={ [
+                                                { label: 'None',        value: '' },
+                                                { label: 'Upcoming',    value: 'upcoming' },
+                                                { label: 'In Progress', value: 'in-progress' },
+                                                { label: 'Completed',   value: 'completed' },
+                                            ] }
+                                            onChange={ ( value ) => updateEvent( index, 'status', value ) }
+                                        />
+                                    { /* Image upload */ }
+                                    <MediaUploadCheck>
+                                        <MediaUpload
+                                            onSelect={ ( media ) => {
+                                                updateEvent( index, 'imageUrl', media.url );
+                                                updateEvent( index, 'imageAlt', media.alt || media.title || '' );
+                                            } }
+                                            allowedTypes={ [ 'image' ] }
+                                            value={ event.imageUrl }
+                                            render={ ( { open } ) => (
+                                                <div style={ { marginBottom: '8px' } }>
+                                                    { event.imageUrl ? (
+                                                        <>
+                                                            <img
+                                                                src={ event.imageUrl }
+                                                                alt={ event.imageAlt }
+                                                                style={ { maxWidth: '100%', marginBottom: '8px', display: 'block' } }
+                                                            />
+                                                            <Button variant="secondary" onClick={ open }>
+                                                                Replace Image
+                                                            </Button>
+                                                            <Button
+                                                                isDestructive
+                                                                variant="link"
+                                                                onClick={ () => {
+                                                                    updateEvent( index, 'imageUrl', '' );
+                                                                    updateEvent( index, 'imageAlt', '' );
+                                                                } }
+                                                                style={ { marginLeft: '8px' } }
+                                                            >
+                                                                Remove Image
+                                                            </Button>
+                                                        </>
+                                                    ) : (
+                                                        <Button variant="secondary" onClick={ open }>
+                                                            Add Image
+                                                        </Button>
+                                                    ) }
+                                                </div>
+                                            ) }
+                                        />
+                                    </MediaUploadCheck>
+
+                                    <Button
+                                        isDestructive
+                                        variant="secondary"
+                                        onClick={ () => removeEvent( index ) }
+                                    >
+                                        Remove Event
+                                    </Button>
+                                </div>
+                            ) ) }
 
                     <Button variant="primary" onClick={ addEvent }>
                         + Add Event

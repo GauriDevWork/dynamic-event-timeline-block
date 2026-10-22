@@ -55,7 +55,27 @@ $wrapper_classes = sprintf(
                             <?php echo esc_html( wp_date( get_option( 'date_format' ), strtotime( $event['date'] ) ) ); ?>
                         </time>
                     <?php endif; ?>
+                    <?php
+                    $icon_map = [
+                        'calendar' => '📅',
+                        'launch'   => '🚀',
+                        'check'    => '✅',
+                        'star'     => '⭐',
+                        'pin'      => '📍',
+                    ];
+                    ?>
 
+                    <?php if ( ! empty( $event['icon'] ) && isset( $icon_map[ $event['icon'] ] ) ) : ?>
+                        <span class="detb-event-icon" aria-hidden="true">
+                            <?php echo $icon_map[ esc_attr( $event['icon'] ) ]; ?>
+                        </span>
+                    <?php endif; ?>
+
+                    <?php if ( ! empty( $event['status'] ) ) : ?>
+                        <span class="detb-event-status detb-status-<?php echo esc_attr( $event['status'] ); ?>">
+                            <?php echo esc_html( ucwords( str_replace( '-', ' ', $event['status'] ) ) ); ?>
+                        </span>
+                    <?php endif; ?>
                     <?php if ( ! empty( $event['title'] ) ) : ?>
                         <h3 class="detb-event-title">
                             <?php echo esc_html( $event['title'] ); ?>
