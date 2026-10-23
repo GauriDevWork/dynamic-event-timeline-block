@@ -1,5 +1,7 @@
 import './style.scss';
 import './editor.scss';
+import { registerBlockVariation } from '@wordpress/blocks';
+import variations from './variations';
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import {
@@ -283,4 +285,10 @@ registerBlockType( metadata.name, {
     },
 
     save: () => null,
+} );
+/**
+ * Register block variations for pre-configured timeline layouts.
+ */
+variations.forEach( ( variation ) => {
+    registerBlockVariation( 'detb/event-timeline', variation );
 } );
