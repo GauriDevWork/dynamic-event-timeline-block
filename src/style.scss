@@ -1,17 +1,23 @@
 /**
  * Frontend styles for the Dynamic Event Timeline Block.
  * Loaded on both frontend and block editor.
+ *
+ * CSS custom properties are used for all colors and sizes.
+ * Dark mode overrides only the variable values — no duplicated rules.
+ * This keeps the stylesheet maintainable as themes and variations are added.
  */
 
 .detb-timeline {
-    --detb-line-color:   #ddd;
-    --detb-dot-color:    #0073aa;
-    --detb-date-color:   #666;
-    --detb-title-color:  #1e1e1e;
-    --detb-text-color:   #444;
-    --detb-bg-color:     #fff;
-    --detb-dot-size:     14px;
-    --detb-line-width:   2px;
+    --detb-line-color:    #ddd;
+    --detb-dot-color:     #0073aa;
+    --detb-date-color:    #666;
+    --detb-title-color:   #1e1e1e;
+    --detb-text-color:    #444;
+    --detb-bg-color:      #fff;
+    --detb-card-bg:       #f9f9f9;
+    --detb-dot-size:      14px;
+    --detb-line-width:    2px;
+    --detb-anim-duration: 0.4s;
 
     position:   relative;
     padding:    0;
@@ -21,79 +27,149 @@
     background: var(--detb-bg-color);
 }
 
-/* ── Vertical layout ───────────────────────────────────── */
+/* ── Entrance animation ─────────────────────────────────── */
+
+@keyframes detb-fade-in-up {
+    from {
+        opacity:   0;
+        transform: translateY( 16px );
+    }
+    to {
+        opacity:   1;
+        transform: translateY( 0 );
+    }
+}
+
+/* ── Vertical layout ────────────────────────────────────── */
 
 .detb-timeline.detb-orientation-vertical .detb-events-list {
-    list-style:    none;
-    margin:        0;
-    padding:       0 0 0 32px;
-    border-left:   var(--detb-line-width) solid var(--detb-line-color);
+    list-style:  none;
+    margin:      0;
+    padding:     0 0 0 32px;
+    border-left: var(--detb-line-width) solid var(--detb-line-color);
 }
 
 .detb-timeline.detb-orientation-vertical .detb-event-item {
-    position:      relative;
-    margin-bottom: 32px;
-    padding-left:  24px;
+    position:        relative;
+    margin-bottom:   32px;
+    padding:         16px;
+    padding-left:    24px;
+    background:      var(--detb-card-bg);
+    border-radius:   6px;
+    animation:       detb-fade-in-up var(--detb-anim-duration) ease both;
 }
+
+.detb-timeline.detb-orientation-vertical .detb-event-item:nth-child(1) { animation-delay: 0.05s; }
+.detb-timeline.detb-orientation-vertical .detb-event-item:nth-child(2) { animation-delay: 0.15s; }
+.detb-timeline.detb-orientation-vertical .detb-event-item:nth-child(3) { animation-delay: 0.25s; }
+.detb-timeline.detb-orientation-vertical .detb-event-item:nth-child(4) { animation-delay: 0.35s; }
+.detb-timeline.detb-orientation-vertical .detb-event-item:nth-child(5) { animation-delay: 0.45s; }
 
 .detb-timeline.detb-orientation-vertical .detb-event-item::before {
     content:       '';
     position:      absolute;
-    left:          calc( -1 * var(--detb-dot-size) / 2 - var(--detb-line-width) );
-    top:           4px;
+    left:          calc( -1 * var(--detb-dot-size) / 2 - var(--detb-line-width) - 16px );
+    top:           20px;
     width:         var(--detb-dot-size);
     height:        var(--detb-dot-size);
     border-radius: 50%;
     background:    var(--detb-dot-color);
+    transition:    transform 0.2s ease;
 }
 
-/* ── Horizontal layout (structure only — Day 6) ────────── */
+.detb-timeline.detb-orientation-vertical .detb-event-item:hover::before {
+    transform: scale( 1.4 );
+}
+
+/* ── Horizontal layout ──────────────────────────────────── */
+
+.detb-timeline.detb-orientation-horizontal {
+    max-width: 100%;
+    overflow:  hidden;
+}
 
 .detb-timeline.detb-orientation-horizontal .detb-events-list {
-    display:         flex;
-    flex-direction:  row;
-    list-style:      none;
-    margin:          0;
-    padding:         32px 0 0 0;
-    border-top:      var(--detb-line-width) solid var(--detb-line-color);
-    overflow-x:      auto;
-    gap:             24px;
+    display:        flex;
+    flex-direction: row;
+    list-style:     none;
+    margin:         0;
+    padding:        48px 0 16px 0;
+    border-top:     var(--detb-line-width) solid var(--detb-line-color);
+    overflow-x:     auto;
+    gap:            0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    /* Custom scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--detb-dot-color) var(--detb-line-color);
+}
+
+.detb-timeline.detb-orientation-horizontal .detb-events-list::-webkit-scrollbar {
+    height: 4px;
+}
+
+.detb-timeline.detb-orientation-horizontal .detb-events-list::-webkit-scrollbar-track {
+    background: var(--detb-line-color);
+}
+
+.detb-timeline.detb-orientation-horizontal .detb-events-list::-webkit-scrollbar-thumb {
+    background: var(--detb-dot-color);
+    border-radius: 2px;
 }
 
 .detb-timeline.detb-orientation-horizontal .detb-event-item {
-    position:        relative;
-    min-width:       180px;
-    padding-top:     24px;
+    position:     relative;
+    min-width:    220px;
+    max-width:    220px;
+    padding:      16px;
+    margin-right: 24px;
+    background:   var(--detb-card-bg);
+    border-radius: 6px;
+    scroll-snap-align: start;
+    flex-shrink:  0;
+    animation:    detb-fade-in-up var(--detb-anim-duration) ease both;
 }
+
+.detb-timeline.detb-orientation-horizontal .detb-event-item:nth-child(1) { animation-delay: 0.05s; }
+.detb-timeline.detb-orientation-horizontal .detb-event-item:nth-child(2) { animation-delay: 0.15s; }
+.detb-timeline.detb-orientation-horizontal .detb-event-item:nth-child(3) { animation-delay: 0.25s; }
+.detb-timeline.detb-orientation-horizontal .detb-event-item:nth-child(4) { animation-delay: 0.35s; }
+.detb-timeline.detb-orientation-horizontal .detb-event-item:nth-child(5) { animation-delay: 0.45s; }
 
 .detb-timeline.detb-orientation-horizontal .detb-event-item::before {
-    content:         '';
-    position:        absolute;
-    top:             calc( -1 * var(--detb-dot-size) / 2 - var(--detb-line-width) );
-    left:            0;
-    width:           var(--detb-dot-size);
-    height:          var(--detb-dot-size);
-    border-radius:   50%;
-    background:      var(--detb-dot-color);
+    content:       '';
+    position:      absolute;
+    top:           calc( -1 * var(--detb-dot-size) / 2 - var(--detb-line-width) - 32px );
+    left:          16px;
+    width:         var(--detb-dot-size);
+    height:        var(--detb-dot-size);
+    border-radius: 50%;
+    background:    var(--detb-dot-color);
+    transition:    transform 0.2s ease;
 }
 
-/* ── Event elements ────────────────────────────────────── */
+.detb-timeline.detb-orientation-horizontal .detb-event-item:hover::before {
+    transform: scale( 1.4 );
+}
+
+/* ── Event elements ─────────────────────────────────────── */
 
 .detb-event-date {
-    display:     block;
-    font-size:   0.8rem;
-    font-weight: 600;
-    color:       var(--detb-date-color);
-    margin-bottom: 4px;
+    display:        block;
+    font-size:      0.8rem;
+    font-weight:    600;
+    color:          var(--detb-date-color);
+    margin-bottom:  4px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 .detb-event-title {
-    font-size:     1.1rem;
-    font-weight:   700;
-    color:         var(--detb-title-color);
-    margin:        0 0 8px 0;
+    font-size:   1.1rem;
+    font-weight: 700;
+    color:       var(--detb-title-color);
+    margin:      0 0 8px 0;
 }
 
 .detb-event-description {
@@ -104,24 +180,11 @@
 }
 
 .detb-no-events {
-    color:       var(--detb-date-color);
-    font-style:  italic;
+    color:      var(--detb-date-color);
+    font-style: italic;
 }
 
-/* ── Dark mode ─────────────────────────────────────────── */
-
-.detb-timeline.detb-dark {
-    --detb-line-color:  #444;
-    --detb-dot-color:   #4fb3f6;
-    --detb-date-color:  #aaa;
-    --detb-title-color: #f0f0f0;
-    --detb-text-color:  #ccc;
-    --detb-bg-color:    #1e1e1e;
-    padding:            16px;
-    border-radius:      8px;
-}
-
-/* ── Event image ───────────────────────────────────────── */
+/* ── Event image ────────────────────────────────────────── */
 
 .detb-event-image {
     margin-bottom: 12px;
@@ -129,21 +192,22 @@
     img {
         width:         100%;
         max-width:     100%;
-        height:        auto;
+        height:        200px;
+        object-fit:    cover;
         border-radius: 4px;
         display:       block;
     }
 }
 
-/* ── Event status badges ───────────────────────────────── */
+/* ── Event status badges ────────────────────────────────── */
 
 .detb-event-status {
-    display:       inline-block;
-    font-size:     0.75rem;
-    font-weight:   600;
-    padding:       2px 8px;
-    border-radius: 12px;
-    margin-bottom: 6px;
+    display:        inline-block;
+    font-size:      0.75rem;
+    font-weight:    600;
+    padding:        2px 8px;
+    border-radius:  12px;
+    margin-bottom:  6px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -156,4 +220,43 @@
     display:       block;
     font-size:     1.5rem;
     margin-bottom: 4px;
+}
+
+/* ── Dark mode ──────────────────────────────────────────── */
+
+.detb-timeline.detb-dark {
+    --detb-line-color:  #444;
+    --detb-dot-color:   #4fb3f6;
+    --detb-date-color:  #aaa;
+    --detb-title-color: #f0f0f0;
+    --detb-text-color:  #ccc;
+    --detb-bg-color:    #1e1e1e;
+    --detb-card-bg:     #2a2a2a;
+    padding:            16px;
+    border-radius:      8px;
+}
+
+/* ── Reduced motion ─────────────────────────────────────── */
+
+@media ( prefers-reduced-motion: reduce ) {
+    .detb-event-item {
+        animation: none !important;
+    }
+
+    .detb-event-item::before {
+        transition: none !important;
+    }
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media ( max-width: 600px ) {
+    .detb-timeline.detb-orientation-horizontal .detb-event-item {
+        min-width: 160px;
+        max-width: 160px;
+    }
+
+    .detb-event-title {
+        font-size: 1rem;
+    }
 }
